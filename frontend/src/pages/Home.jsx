@@ -51,7 +51,7 @@ export default function Home() {
     setAnimate(false);
 
     try {
-      const res = await api.get("/products");
+      const res = await api.get("/api/products");
       setProducts(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.log(err);

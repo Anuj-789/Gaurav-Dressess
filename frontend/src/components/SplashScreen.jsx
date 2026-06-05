@@ -17,7 +17,7 @@ export default function SplashScreen({ onFinish }) {
       <img
         src={logo}
         alt="logo"
-        className="w-28 h-28 mb-4 animate-bounce drop-shadow-2xl"
+        className="w-28 h-28 mb-4 animate-bounce drop-shadow-2xl rounded-full object-cover"
       />
 
       {/* TITLE */}

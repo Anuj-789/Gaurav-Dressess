@@ -47,7 +47,7 @@ export default function ProductDetails() {
         <img
           src={logo}
           alt="logo"
-          className="w-16 h-16 rounded-full object-cover shadow-lg"
+          className="w-16 h-16 rounded-full object-cover shadow-lg "
         />
 
       </div>

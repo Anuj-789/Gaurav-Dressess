@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useDisableZoom from "../hooks/useDisableZoom";
 import api from "../api/axios";
-
+import logo from "../assets/shop-logo.png";
 export default function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -35,7 +35,33 @@ export default function ProductDetails() {
   }, [id]);
 
   if (!product) {
-    return <div className="p-5 text-center text-gray-500">Loading...</div>;
+     return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-white to-purple-100">
+
+      <div className="relative flex items-center justify-center">
+
+        {/* SPINNER RING */}
+        <div className="absolute w-24 h-24 rounded-full border-4 border-t-purple-600 border-r-transparent border-b-purple-200 border-l-transparent animate-spin"></div>
+
+        {/* LOGO */}
+        <img
+          src={logo}
+          alt="logo"
+          className="w-16 h-16 rounded-full object-cover shadow-lg"
+        />
+
+      </div>
+       <div className="absolute bottom-10 text-center">
+        <h1 className="text-purple-700 font-bold text-lg tracking-wide">
+          Gaurav Dresses
+        </h1>
+        <p className="text-gray-500 text-sm">
+          Loading premium collection...
+        </p>
+      </div>
+
+    </div>
+  );
   }
 
   const getImageUrl = (img) => {

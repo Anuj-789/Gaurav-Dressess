@@ -14,52 +14,56 @@ export default function Home() {
 
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [search, setSearch] = useState("");
-useDisableZoom();
-  // 🔥 animation trigger state
+
   const [animate, setAnimate] = useState(false);
+
+  useDisableZoom();
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  // 🧠 SAFE API CALL
   const fetchProducts = async () => {
     setLoading(true);
-    setAnimate(false); // reset animation first
+    setAnimate(false);
 
     try {
       const res = await api.get("/products");
-      setProducts(res.data);
+
+      // safety check (important)
+      setProducts(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.log(err);
+      console.log("API Error:", err);
+      setProducts([]);
     } finally {
       setLoading(false);
 
-      // 🔥 trigger animation AFTER load
       setTimeout(() => {
         setAnimate(true);
-      }, 50);
+      }, 80);
     }
   };
 
-  // CATEGORY CLICK
+  // 📂 CATEGORY FILTER
   const handleCategory = async (cat) => {
     setSelectedCategory(cat);
-
-    setAnimate(false); // restart animation
+    setAnimate(false);
 
     try {
       const res = await api.get("/products");
-      setProducts(res.data);
+      setProducts(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.log(err);
+      setProducts([]);
     } finally {
       setTimeout(() => {
         setAnimate(true);
-      }, 50);
+      }, 80);
     }
   };
 
-  // FILTER
+  // 🔍 FILTER LOGIC (SAFE)
   const getFilteredProducts = () => {
     const searchText = search.toLowerCase().trim();
 
@@ -74,6 +78,8 @@ useDisableZoom();
             return category === selectedCategory.toLowerCase();
           });
 
+    if (!searchText) return baseProducts;
+
     const searched = baseProducts.filter((p) => {
       const name = (p.name || "").toLowerCase();
       const desc = (p.description || "").toLowerCase();
@@ -81,7 +87,7 @@ useDisableZoom();
       return name.includes(searchText) || desc.includes(searchText);
     });
 
-    return searched.length > 0 ? searched : baseProducts;
+    return searched;
   };
 
   const finalProducts = getFilteredProducts();
@@ -102,6 +108,10 @@ useDisableZoom();
             {Array(8).fill(0).map((_, i) => (
               <ProductSkeleton key={i} />
             ))}
+          </div>
+        ) : finalProducts.length === 0 ? (
+          <div className="text-center text-gray-500 py-10">
+            No products found 😕
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">

@@ -7,6 +7,15 @@ export default function ProductCard({ product }) {
 
   const [added, setAdded] = useState(false);
 
+  // 🖼️ SAFE IMAGE FUNCTION (IMPORTANT FIX)
+  const getImageUrl = (img) => {
+    if (!img) return "https://via.placeholder.com/300";
+
+    if (img.startsWith("http")) return img;
+
+    return `${import.meta.env.VITE_API_URL}/${img}`;
+  };
+
   // 🛒 ADD TO CART
   const addToCart = (e) => {
     e.stopPropagation();
@@ -16,7 +25,7 @@ export default function ProductCard({ product }) {
     const exists = cart.find((p) => p._id === product._id);
 
     if (!exists) {
-      cart.push(product);
+      cart.push({ ...product, quantity: 1 });
       localStorage.setItem("cart", JSON.stringify(cart));
     }
 
@@ -85,7 +94,7 @@ export default function ProductCard({ product }) {
       {/* IMAGE */}
       <div className="overflow-hidden bg-gray-100">
         <img
-          src={product.image}
+          src={getImageUrl(product.image)}
           alt={product.name}
           className="
             w-full

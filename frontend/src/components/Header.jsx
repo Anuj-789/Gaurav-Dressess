@@ -48,7 +48,7 @@ export default function Header() {
 
           {/* CENTER */}
           <div className="hidden sm:block text-2xl opacity-90">
-            Women's Fashion Collection
+           Welcome
           </div>
 
           {/* CART */}

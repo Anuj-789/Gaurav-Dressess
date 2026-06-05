@@ -25,9 +25,7 @@ export default function ProductDetails() {
           setSelectedVariant(res.data.variants[0]);
         }
 
-        // 🔥 trigger animation AFTER load
         setTimeout(() => setLoaded(true), 50);
-
       } catch (err) {
         console.log(err);
       }
@@ -37,20 +35,31 @@ export default function ProductDetails() {
   }, [id]);
 
   if (!product) {
-    return (
-      <div className="p-5 text-center text-gray-500">
-        Loading...
-      </div>
-    );
+    return <div className="p-5 text-center text-gray-500">Loading...</div>;
   }
 
-  const activeImage = selectedVariant?.image || product.image;
+  const getImageUrl = (img) => {
+    if (!img) return "https://via.placeholder.com/300";
+    if (img.startsWith("http")) return img;
+    return `${import.meta.env.VITE_API_URL}/${img}`;
+  };
 
+  const activeImage =
+    selectedVariant?.image || product.image;
+
+  // 🛒 ADD TO CART (SAFE)
   const addToCart = () => {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    if (!cart.find((p) => p._id === product._id)) {
-      cart.push(product);
+    const exists = cart.find((p) => p._id === product._id);
+
+    if (!exists) {
+      cart.push({
+        ...product,
+        selectedVariant,
+        quantity: 1,
+      });
+
       localStorage.setItem("cart", JSON.stringify(cart));
     }
 
@@ -58,12 +67,15 @@ export default function ProductDetails() {
     setTimeout(() => setAdded(false), 1500);
   };
 
+  // 📦 WHATSAPP ORDER (IMPROVED)
   const buyNow = () => {
     const phone = "9128405832";
 
-    const msg = `🛍️ Order:\nProduct: ${product.name}\nPrice: ₹${
-      selectedVariant?.price || product.price
-    }`;
+    const msg = `🛍️ *Gaurav Dresses Order*\n\n` +
+      `📦 ${product.name}\n` +
+      `📂 ${product.category?.name || product.category}\n` +
+      `🎨 ${selectedVariant?.color || "Normal"}\n` +
+      `💰 ₹${selectedVariant?.price || product.price}\n`;
 
     window.open(
       `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
@@ -73,14 +85,14 @@ export default function ProductDetails() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 via-white to-purple-100">
 
-      {/* HEADER (NO ANIMATION) */}
+      {/* HEADER */}
       <div className="bg-gradient-to-r from-indigo-950 via-purple-700 to-violet-950 py-3 text-center sticky top-0 z-10">
-       <span className="font-bold text-2xl sm:text-3xl tracking-wide animate-pulse text-white drop-shadow-lg">
-  Gaurav Dresses
-</span>
+        <span className="font-bold text-2xl sm:text-3xl tracking-wide animate-pulse text-white drop-shadow-lg">
+          Gaurav Dresses
+        </span>
       </div>
 
-      {/* 🔥 ANIMATED BODY */}
+      {/* BODY */}
       <div
         className={`p-3 transition-all duration-700 ease-out ${
           loaded
@@ -92,7 +104,7 @@ export default function ProductDetails() {
         {/* IMAGE */}
         <div className="flex justify-center mt-3">
           <img
-            src={activeImage}
+            src={getImageUrl(activeImage)}
             onClick={() => setZoom(true)}
             className="w-full max-w-md h-72 object-cover rounded-xl shadow cursor-zoom-in"
           />
@@ -117,9 +129,12 @@ export default function ProductDetails() {
             <div
               key={i}
               onClick={() => setSelectedVariant(v)}
-              className="min-w-[85px] p-2 border rounded-xl text-center cursor-pointer"
+              className="min-w-[85px] p-2 border rounded-xl text-center cursor-pointer hover:scale-105 transition"
             >
-              <img src={v.image} className="w-10 h-10 mx-auto rounded-full" />
+              <img
+                src={getImageUrl(v.image)}
+                className="w-10 h-10 mx-auto rounded-full object-cover"
+              />
               <p className="text-xs">{v.color}</p>
               <p className="text-purple-600 font-bold">₹{v.price}</p>
             </div>
@@ -172,7 +187,7 @@ export default function ProductDetails() {
           className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999]"
         >
           <img
-            src={activeImage}
+            src={getImageUrl(activeImage)}
             className="max-w-[95%] max-h-[95%] object-contain rounded-xl"
           />
         </div>

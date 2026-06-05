@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -18,21 +18,24 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // ⚠️ RESPONSE INTERCEPTOR (GLOBAL ERROR HANDLE)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response) {
-      if (error.response.status === 401) {
-        // token expired or invalid
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      }
+    // 🧠 SAFE CHECK (avoid crash)
+    if (!error.response) {
+      console.log("Network Error:", error.message);
+      return Promise.reject(error);
+    }
+
+    if (error.response.status === 401) {
+      localStorage.removeItem("token");
+
+      // safer redirect (Vite/React Router friendly)
+      window.location.href = "/login";
     }
 
     return Promise.reject(error);

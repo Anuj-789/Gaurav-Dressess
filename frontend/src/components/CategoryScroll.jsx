@@ -27,7 +27,7 @@ export default function CategoryScroll({ onSelect }) {
     if (!img) return "https://via.placeholder.com/150";
     if (img.startsWith("http")) return img;
     if (img.startsWith("data:image")) return img;
-    return `http://localhost:5000/${img}`;
+    return `${import.meta.env.VITE_API_URL}/${img}`;
   };
 
   return (
